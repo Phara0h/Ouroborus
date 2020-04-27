@@ -7,15 +7,14 @@ image:
 - Ubuntu
 - Visual Studio 2019
 platform: Any CPU
-init:
+build_script:
 - sh: >-
     cd http
 
     git clone https://github.com/uNetworking/uSockets
 
     cd ..
-build_script:
-- sh: >-
+
     make
 
     git checkout binaries
