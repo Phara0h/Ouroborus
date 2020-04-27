@@ -10,16 +10,24 @@ platform: Any CPU
 init:
 - sh: >-
     cd http
+
     git clone https://github.com/uNetworking/uSockets
+
     cd ..
 build_script:
 - sh: >-
     make
+
     git checkout binaries
+
     cp dist/*.node .
+
     git status
+
     git pull origin binaries
+
     git commit -a -m "Updated binaries" --allow-empty
+
     git push binaries
 build:
   verbosity: minimal
