@@ -36,4 +36,4 @@ build_script:
 
     git commit -a -m "Updated binaries" --allow-empty
 
-    git push %REPO% binaries
+    git push ${REPO} binaries
