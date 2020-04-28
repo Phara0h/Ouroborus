@@ -1,8 +1,0 @@
-
-.DS_Store
-*.out
-*.o
-targets
-dist
-http/uSockets
-node*
