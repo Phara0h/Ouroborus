@@ -16,7 +16,7 @@ for:
       only:
         - image: Visual Studio 2017
     build_script:
-    - PS: >-
+    - ps: >-
         cd http
 
         git clone https://github.com/uNetworking/uSockets
