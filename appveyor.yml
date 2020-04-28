@@ -5,35 +5,78 @@ branches:
 image:
 - macOS
 - Ubuntu
-- Visual Studio 2019
+- Visual Studio 2017
 platform: Any CPU
 environment:
   REPO:
     secure: RuxL+CFg1/bpi2CaOTBKt/4sCItaGoVeAzjtq246h9n5Z/vv+gT6Erm92A+/RWKdEK12UZAIuitS8tNlTVlbj7UfNIupGxt5n6po/VKiMlOD9tpyrhvymNQhDDBcfW6p
-build_script:
-- sh: >-
-    cd http
 
-    git clone https://github.com/uNetworking/uSockets
+matrix:
+  - fast_finish: true
+for:
+  -
+    matrix:
+      only:
+        - image: Visual Studio 2017
+    build_script:
+    - PS: >-
+        cd http
 
-    cd ..
+        git clone https://github.com/uNetworking/uSockets
 
-    make
+        cd ..
 
-    git checkout binaries
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat
 
-    cp dist/*.node .
+        nmake
 
-    git add Ouroborus*
+        git checkout binaries
 
-    git status
+        xcopy /Y dist\*.node .
 
-    git pull origin binaries
+        git add Ouroborus*
 
-    git config --global user.email "jtwhissel@gmail.com"
+        git status
 
-    git config --global user.name "Phara0h"
+        git pull origin binaries
 
-    git commit -a -m "Updated binaries" --allow-empty
+        git config --global user.email "jtwhissel@gmail.com"
 
-    git push ${REPO} binaries
+        git config --global user.name "Phara0h"
+
+        git commit -a -m "Updated binaries" --allow-empty
+
+        git push "https://phara0h:%SECRET%@github.com/Phara0h/Ouroborus" binaries
+
+  -
+    matrix:
+      only:
+        - image: Ubuntu
+        - image: macOS
+    build_script:
+    - sh: >-
+        cd http
+
+        git clone https://github.com/uNetworking/uSockets
+
+        cd ..
+
+        make
+
+        git checkout binaries
+
+        cp dist/*.node .
+
+        git add Ouroborus*
+
+        git status
+
+        git pull origin binaries
+
+        git config --global user.email "jtwhissel@gmail.com"
+
+        git config --global user.name "Phara0h"
+
+        git commit -a -m "Updated binaries" --allow-empty
+
+        git push "https://phara0h:${SECRET}@github.com/Phara0h/Ouroborus"binaries
