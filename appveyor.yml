@@ -8,7 +8,7 @@ image:
 - Visual Studio 2017
 platform: Any CPU
 environment:
-  REPO:
+  SECRET:
     secure: W1YT21hLQOXliZQ2kvGJFVraH7NfZa69gQPGWswoUai8DCNOTC2tbV22u3tfxdUw
 for:
   -
@@ -76,4 +76,4 @@ for:
 
         git commit -a -m "Updated binaries" --allow-empty
 
-        git push "https://phara0h:${SECRET}@github.com/Phara0h/Ouroborus"binaries
+        git push "https://phara0h:${SECRET}@github.com/Phara0h/Ouroborus" binaries
