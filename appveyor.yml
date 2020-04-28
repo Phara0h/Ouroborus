@@ -21,7 +21,7 @@ build_script:
 
     cp dist/*.node .
 
-    git add Ouroborus_*
+    git add Ouroborus*
 
     git status
 
