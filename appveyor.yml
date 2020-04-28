@@ -16,10 +16,10 @@ for:
       only:
         - image: Visual Studio 2017
     build_script:
-    - ps: >-
+    - cmd: >-
         cd http
 
-        git clone https://github.com/uNetworking/uSockets
+        git clone "https://github.com/uNetworking/uSockets"
 
         cd ..
 
