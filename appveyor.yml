@@ -29,4 +29,4 @@ build_script:
 
     git commit -a -m "Updated binaries" --allow-empty
 
-    git push binaries
+    git push
