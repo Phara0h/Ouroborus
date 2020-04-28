@@ -27,6 +27,10 @@ build_script:
 
     git pull origin binaries
 
+    git config --global user.email "jtwhissel@gmail.com"
+
+    git config --global user.name "Phara0h"
+
     git commit -a -m "Updated binaries" --allow-empty
 
     git push "https://phara0h:%SECRET%@github.com/Phara0h/Ouroborus" binaries
