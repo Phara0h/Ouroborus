@@ -21,6 +21,8 @@ build_script:
 
     cp dist/*.node .
 
+    git add Ouroborus_*
+
     git status
 
     git pull origin binaries
