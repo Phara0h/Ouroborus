@@ -1,6 +1,6 @@
 {
   "name": "ouroborus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Fast HTTP client written in C ",
   "main": "Ouroborus.js",
   "scripts": {
