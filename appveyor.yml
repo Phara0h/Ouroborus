@@ -9,10 +9,7 @@ image:
 platform: Any CPU
 environment:
   REPO:
-    secure: RuxL+CFg1/bpi2CaOTBKt/4sCItaGoVeAzjtq246h9n5Z/vv+gT6Erm92A+/RWKdEK12UZAIuitS8tNlTVlbj7UfNIupGxt5n6po/VKiMlOD9tpyrhvymNQhDDBcfW6p
-
-matrix:
-  - fast_finish: true
+    secure: W1YT21hLQOXliZQ2kvGJFVraH7NfZa69gQPGWswoUai8DCNOTC2tbV22u3tfxdUw
 for:
   -
     matrix:
