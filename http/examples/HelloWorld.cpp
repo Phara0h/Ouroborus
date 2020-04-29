@@ -10,6 +10,8 @@ int main() {
 	  .passphrase = "1234"
 	}).get("/*", [](auto *res, auto *req) {
 	    res->end("Hello world!");
+	}).put("/:test/:foo/:bar", [](auto *res, auto *req) {
+	    res->end("Hello world!");
 	}).listen(3000, [](auto *token) {
 	    if (token) {
 		std::cout << "Listening on port " << 3000 << std::endl;

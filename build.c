@@ -69,10 +69,14 @@ void build(char *compiler, char *cpp_compiler, char *cpp_linker, char *os, char 
 void copy_files() {
 #ifdef IS_WINDOWS
     run("copy \"src\\Ouroborus.js\" dist /Y");
+    run("xcopy \"src\\js\" dist /Y");
     run("copy \"package.json\" dist /Y");
+    run("copy \"README.md\" dist /Y");
 #else
     run("cp src/Ouroborus.js dist/Ouroborus.js");
+    run("cp -av src/js dist");
     run("cp package.json dist/package.json");
+    run("cp README.md dist/README.md");
 #endif
 }
 

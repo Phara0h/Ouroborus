@@ -149,12 +149,6 @@ private:
                     return nullptr;
                 }
 
-                /* First of all we need to check if this socket was deleted due to upgrade */
-                if (httpContextData->upgradedWebSocket) {
-                    /* We differ between closed and upgraded below */
-                    return nullptr;
-                }
-
                 /* Was the socket closed? */
                 if (us_socket_is_closed(SSL, (struct us_socket_t *) s)) {
                     return nullptr;
@@ -230,21 +224,6 @@ private:
                 }
 
                 return (us_socket_t *) returnedSocket;
-            }
-
-            /* If we upgraded, check here (differ between nullptr close and nullptr upgrade) */
-            if (httpContextData->upgradedWebSocket) {
-                /* This path is only for upgraded websockets */
-                AsyncSocket<SSL> *asyncSocket = (AsyncSocket<SSL> *) httpContextData->upgradedWebSocket;
-
-                /* Uncork here as well (note: what if we failed to uncork and we then pub/sub before we even upgraded?) */
-                /*auto [written, failed] = */asyncSocket->uncork();
-
-                /* Reset upgradedWebSocket before we return */
-                httpContextData->upgradedWebSocket = nullptr;
-
-                /* Return the new upgraded websocket */
-                return (us_socket_t *) asyncSocket;
             }
 
             /* It is okay to uncork a closed socket and we need to */

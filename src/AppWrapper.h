@@ -27,7 +27,7 @@ void Ouroborus_App_get(F f, const FunctionCallbackInfo<Value> &args) {
         Local<Object> reqObject = perContextData->reqTemplate.Get(isolate)->Clone();
         reqObject->SetAlignedPointerInInternalField(0, req);
 
-        Local<Value> argv[] = {resObject, reqObject};
+        Local<Value> argv[] = {reqObject, resObject};
         CallJS(isolate, cb.Get(isolate), 2, argv);
 
         /* Properly invalidate req */
@@ -177,7 +177,7 @@ void Ouroborus_App(const FunctionCallbackInfo<Value> &args) {
         Ouroborus_App_get<APP>(&APP::options, args);
     }, args.Data()));
 
-    appTemplate->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "del", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, [](auto &args) {
+    appTemplate->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "delete", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, [](auto &args) {
         Ouroborus_App_get<APP>(&APP::del, args);
     }, args.Data()));
 

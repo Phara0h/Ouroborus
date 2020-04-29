@@ -88,7 +88,7 @@ struct HttpResponseWrapper {
         auto *res = getHttpResponse<SSL>(args);
         if (res) {
             std::string_view ip = res->getRemoteAddress();
-
+            
             /* Todo: we need to pass a copy here */
             args.GetReturnValue().Set(ArrayBuffer::New(isolate, (void *) ip.data(), ip.length()/*, ArrayBufferCreationMode::kInternalized*/));
         }
@@ -274,7 +274,7 @@ struct HttpResponseWrapper {
 
         /* Create our template */
         Local<Object> resObjectLocal = resTemplateLocal->GetFunction(isolate->GetCurrentContext()).ToLocalChecked()->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-        
+
         return resObjectLocal;
     }
 };

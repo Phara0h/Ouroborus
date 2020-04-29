@@ -6,3 +6,4 @@ targets
 dist
 http/uSockets
 node*
+http/HelloWorld

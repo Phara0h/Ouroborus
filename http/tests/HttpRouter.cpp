@@ -14,35 +14,35 @@ void testMethodPriority() {
         return true;
     }, r.LOW_PRIORITY);
 
-    r.add({"patch"}, "/static/route", [&result](auto *) {
+    r.add({"PATCH"}, "/static/route", [&result](auto *) {
         std::cout << "PATCH static route" << std::endl;
         result += "PS";
         return false;
     });
 
-    r.add({"get"}, "/static/route", [&result](auto *) {
+    r.add({"GET"}, "/static/route", [&result](auto *) {
         std::cout << "GET static route" << std::endl;
         result += "GS";
         return true;
     });
 
     assert(r.route("nonsense", "/static/route") == false);
-    assert(r.route("get", "/static") == false);
+    assert(r.route("GET", "/static") == false);
     assert(result == "");
 
     /* Should end up directly in ANY handler */
     result.clear();
-    assert(r.route("post", "/static/route"));
+    assert(r.route("POST", "/static/route"));
     assert(result == "AS");
 
     /* Should up directly in GET handler */
     result.clear();
-    assert(r.route("get", "/static/route"));
+    assert(r.route("GET", "/static/route"));
     assert(result == "GS");
 
     /* Should end up in PATCH then in ANY handler */
     result.clear();
-    assert(r.route("patch", "/static/route"));
+    assert(r.route("PATCH", "/static/route"));
     assert(result == "PSAS");
 }
 
@@ -57,25 +57,25 @@ void testPatternPriority() {
         return false;
     }, r.LOW_PRIORITY);
 
-    r.add({"get"}, "/a/:b/c", [&result](auto *) {
+    r.add({"GET"}, "/a/:b/c", [&result](auto *) {
         std::cout << "GET parameter route" << std::endl;
         result += "GP";
         return false;
     });
 
-    r.add({"get"}, "/a/*", [&result](auto *) {
+    r.add({"GET"}, "/a/*", [&result](auto *) {
         std::cout << "GET wildcard route" << std::endl;
         result += "GW";
         return false;
     });
 
-    r.add({"get"}, "/a/b/c", [&result](auto *) {
+    r.add({"GET"}, "/a/b/c", [&result](auto *) {
         std::cout << "GET static route" << std::endl;
         result += "GS";
         return false;
     });
 
-    r.add({"post"}, "/a/:b/c", [&result](auto *) {
+    r.add({"POST"}, "/a/:b/c", [&result](auto *) {
         std::cout << "POST parameter route" << std::endl;
         result += "PP";
         return false;
@@ -87,11 +87,11 @@ void testPatternPriority() {
         return false;
     }, r.LOW_PRIORITY);
 
-    assert(r.route("post", "/a/b/c") == false);
+    assert(r.route("POST", "/a/b/c") == false);
     assert(result == "ASPPAP");
 
     result.clear();
-    assert(r.route("get", "/a/b/c") == false);
+    assert(r.route("GET", "/a/b/c") == false);
     assert(result == "GSASGPAPGW");
 }
 
@@ -101,28 +101,28 @@ void testUpgrade() {
     std::string result;
 
     /* HTTP on / */
-    r.add({"get"}, "/something", [&result](auto *) {
+    r.add({"GET"}, "/something", [&result](auto *) {
         result += "GS";
         return true;
     }, r.MEDIUM_PRIORITY);
 
     /* HTTP on /* */
-    r.add({"get"}, "/*", [&result](auto *) {
+    r.add({"GET"}, "/*", [&result](auto *) {
         result += "GW";
         return false;
     }, r.MEDIUM_PRIORITY);
 
     /* WebSockets on /* */
-    r.add({"get"}, "/*", [&result](auto *) {
+    r.add({"GET"}, "/*", [&result](auto *) {
         result += "WW";
         return false;
     }, r.HIGH_PRIORITY);
 
-    assert(r.route("get", "/something"));
+    assert(r.route("GET", "/something"));
     assert(result == "WWGS");
     result.clear();
 
-    assert(r.route("get", "/") == false);
+    assert(r.route("GET", "/") == false);
     assert(result == "WWGW");
 }
 
@@ -132,20 +132,20 @@ void testBugReports() {
         Ouroborus::HttpRouter<int> r;
         std::string result;
 
-        r.add({"get"}, "/foo//////bar/baz/qux", [&result](auto *) {
+        r.add({"GET"}, "/foo//////bar/baz/qux", [&result](auto *) {
             result += "MANYSLASH";
             return false;
         }, r.MEDIUM_PRIORITY);
 
-        r.add({"get"}, "/foo", [&result](auto *) {
+        r.add({"GET"}, "/foo", [&result](auto *) {
             result += "FOO";
             return false;
         }, r.MEDIUM_PRIORITY);
 
-        r.route("get", "/foo");
-        r.route("get", "/foo/");
-        r.route("get", "/foo//bar/baz/qux");
-        r.route("get", "/foo//////bar/baz/qux");
+        r.route("GET", "/foo");
+        r.route("GET", "/foo/");
+        r.route("GET", "/foo//bar/baz/qux");
+        r.route("GET", "/foo//////bar/baz/qux");
         assert(result == "FOOMANYSLASH");
     }
 
@@ -153,12 +153,12 @@ void testBugReports() {
         Ouroborus::HttpRouter<int> r;
         std::string result;
 
-        r.add({"get"}, "/test/*", [&result](auto *) {
+        r.add({"GET"}, "/test/*", [&result](auto *) {
             result += "TEST";
             return false;
         }, r.MEDIUM_PRIORITY);
 
-        r.route("get", "/test/");
+        r.route("GET", "/test/");
         assert(result == "TEST");
     }
 
@@ -167,23 +167,23 @@ void testBugReports() {
         std::string result;
 
         /* WS on /* */
-        r.add({"get"}, "/*", [&result](auto *) {
+        r.add({"GET"}, "/*", [&result](auto *) {
             result += "WW";
             return false;
         }, r.HIGH_PRIORITY);
 
         /* HTTP on /ok */
-        r.add({"get"}, "/ok", [&result](auto *) {
+        r.add({"GET"}, "/ok", [&result](auto *) {
             result += "GS";
             return false;
         }, r.MEDIUM_PRIORITY);
 
-        r.add({"get"}, "/*", [&result](auto *) {
+        r.add({"GET"}, "/*", [&result](auto *) {
             result += "GW";
             return false;
         }, r.MEDIUM_PRIORITY);
 
-        r.route("get", "/ok");
+        r.route("GET", "/ok");
         assert(result == "WWGSGW");
     }
 
@@ -192,18 +192,18 @@ void testBugReports() {
         std::string result;
 
         /* WS on / */
-        r.add({"get"}, "/", [&result](auto *) {
+        r.add({"GET"}, "/", [&result](auto *) {
             result += "WS";
             return false;
         }, r.HIGH_PRIORITY);
 
         /* HTTP on / */
-        r.add({"get"}, "/", [&result](auto *) {
+        r.add({"GET"}, "/", [&result](auto *) {
             result += "GS";
             return false;
         }, r.MEDIUM_PRIORITY);
 
-        r.route("get", "/");
+        r.route("GET", "/");
         assert(result == "WSGS");
     }
 
@@ -212,13 +212,13 @@ void testBugReports() {
         std::string result;
 
         /* WS on /* */
-        r.add({"get"}, "/*", [&result](auto *) {
+        r.add({"GET"}, "/*", [&result](auto *) {
             result += "WW";
             return false;
         }, r.HIGH_PRIORITY);
 
         /* GET on /static */
-        r.add({"get"}, "/static", [&result](auto *) {
+        r.add({"GET"}, "/static", [&result](auto *) {
             result += "GSL";
             return false;
         }, r.MEDIUM_PRIORITY);
@@ -229,7 +229,7 @@ void testBugReports() {
             return false;
         }, r.LOW_PRIORITY);
 
-        r.route("get", "/static");
+        r.route("GET", "/static");
         assert(result == "WWGSLAW");
     }
 
@@ -238,19 +238,19 @@ void testBugReports() {
         std::string result;
 
         /* WS on /* */
-        r.add({"get"}, "/*", [&result](auto *) {
+        r.add({"GET"}, "/*", [&result](auto *) {
             result += "WW";
             return false;
         }, r.HIGH_PRIORITY);
 
         /* GET on / */
-        r.add({"get"}, "/", [&result](auto *) {
+        r.add({"GET"}, "/", [&result](auto *) {
             result += "GSS";
             return false;
         }, r.MEDIUM_PRIORITY);
 
         /* GET on /static */
-        r.add({"get"}, "/static", [&result](auto *) {
+        r.add({"GET"}, "/static", [&result](auto *) {
             result += "GSL";
             return false;
         }, r.MEDIUM_PRIORITY);
@@ -261,7 +261,7 @@ void testBugReports() {
             return false;
         }, r.LOW_PRIORITY);
 
-        r.route("get", "/static");
+        r.route("GET", "/static");
         assert(result == "WWGSLAW");
     }
 }
@@ -271,7 +271,7 @@ void testParameters() {
     Ouroborus::HttpRouter<int> r;
     std::string result;
 
-    r.add({"get"}, "/candy/:kind/*", [&result](auto *h) {
+    r.add({"GET"}, "/candy/:kind/*", [&result](auto *h) {
         auto [paramsTop, params] = h->getParameters();
 
         assert(paramsTop == 0);
@@ -281,7 +281,7 @@ void testParameters() {
         return false;
     });
 
-    r.add({"get"}, "/candy/lollipop/*", [&result](auto *h) {
+    r.add({"GET"}, "/candy/lollipop/*", [&result](auto *h) {
         auto [paramsTop, params] = h->getParameters();
 
         assert(paramsTop == -1);
@@ -290,9 +290,9 @@ void testParameters() {
         return false;
     });
 
-    r.add({"get"}, "/candy/:kind/:action", [&result](auto *h) {
+    r.add({"GET"}, "/candy/:kind/:action", [&result](auto *h) {
         auto [paramsTop, params] = h->getParameters();
-
+        std::cout << "2 Params" << std::endl;
         assert(paramsTop == 1);
         assert(params[0] == "lollipop");
         assert(params[1] == "eat");
@@ -301,7 +301,7 @@ void testParameters() {
         return false;
     });
 
-    r.add({"get"}, "/candy/lollipop/:action", [&result](auto *h) {
+    r.add({"GET"}, "/candy/lollipop/:action", [&result](auto *h) {
         auto [paramsTop, params] = h->getParameters();
 
         assert(params[0] == "eat");
@@ -311,7 +311,7 @@ void testParameters() {
         return false;
     });
 
-    r.add({"get"}, "/candy/lollipop/eat", [&result](auto *h) {
+    r.add({"GET"}, "/candy/lollipop/eat", [&result](auto *h) {
         auto [paramsTop, params] = h->getParameters();
 
         assert(paramsTop == -1);
@@ -320,13 +320,13 @@ void testParameters() {
         return false;
     });
 
-    r.route("get", "/candy/lollipop/eat");
+    r.route("GET", "/candy/lollipop/eat");
     assert(result == "GLSGLPGLWGPPGPW");
     result.clear();
 
-    r.route("get", "/candy/lollipop/");
-    r.route("get", "/candy/lollipop");
-    r.route("get", "/candy/");
+    r.route("GET", "/candy/lollipop/");
+    r.route("GET", "/candy/lollipop");
+    r.route("GET", "/candy/");
     assert(result == "GLWGPW");
 }
 

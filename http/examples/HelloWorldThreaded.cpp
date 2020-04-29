@@ -11,11 +11,11 @@ int main() {
 
             Ouroborus::App().get("/*", [](auto *res, auto *req) {
                 res->end("Hello world!");
-            }).listen(3000, [](auto *token) {
+            }).listen(4001, [](auto *token) {
                 if (token) {
-                    std::cout << "Thread " << std::this_thread::get_id() << " listening on port " << 3000 << std::endl;
+                    std::cout << "Thread " << std::this_thread::get_id() << " listening on port " << 4001 << std::endl;
                 } else {
-                    std::cout << "Thread " << std::this_thread::get_id() << " failed to listen on port 3000" << std::endl;
+                    std::cout << "Thread " << std::this_thread::get_id() << " failed to listen on port 4001" << std::endl;
                 }
             }).run();
 

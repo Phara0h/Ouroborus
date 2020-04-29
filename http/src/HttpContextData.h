@@ -40,7 +40,6 @@ private:
     };
 
     HttpRouter<RouterData> router;
-    void *upgradedWebSocket = nullptr;
 };
 
 }

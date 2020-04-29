@@ -1,17 +1,30 @@
 {
   "name": "ouroborus",
-  "version": "1.0.0",
+  "version": "1.0.1a",
   "description": "A Fast HTTP client written in C ",
   "main": "Ouroborus.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+  "type": "git",
+  "url": "git+https://github.com/phara0h/ouroborus.git"
+},
   "keywords": [
     "fast",
     "http",
     "rest",
-    "client"
+    "client",
+    "server",
+    "router"
   ],
+  "engines": {
+  "node": ">=10.x"
+},
+"bugs": {
+  "url": "https://github.com/phara0h/ouroborus/issues"
+},
+"homepage": "https://github.com/phara0h/ouroborus#readme",
   "author": "Phara0h",
   "license": "MIT",
   "dependencies": {

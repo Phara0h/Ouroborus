@@ -48,14 +48,12 @@ int main(int argc, char *argv[]) {
     buffer << t.rdbuf();
     std::string code = buffer.str();
 
-    // inte den blekaste
     V8::InitializeICUDefaultLocation(argv[0]);
     V8::InitializeExternalStartupData(argv[0]);
     std::unique_ptr<Platform> platform = platform::NewDefaultPlatform();
     V8::InitializePlatform(platform.get());
     V8::Initialize();
 
-    // isolate vet vi typ vad det är
     Isolate::CreateParams create_params;
     create_params.array_buffer_allocator = ArrayBuffer::Allocator::NewDefaultAllocator();
     Isolate *isolate = Isolate::New(create_params);
@@ -67,7 +65,7 @@ int main(int argc, char *argv[]) {
         Local<ObjectTemplate> global = ObjectTemplate::New(isolate);
 
         // add sign of stand-alone
-        global->Set(isolate, "runtime", String::NewFromUtf8(isolate, "µWebSockets.js", NewStringType::kNormal).ToLocalChecked());
+        global->Set(isolate, "runtime", String::NewFromUtf8(isolate, "Ouroborus", NewStringType::kNormal).ToLocalChecked());
 
         // console namespace
         Local<ObjectTemplate> console = ObjectTemplate::New(isolate);
@@ -83,23 +81,18 @@ int main(int argc, char *argv[]) {
         global->Set(String::NewFromUtf8(isolate, "Ouroborus", NewStringType::kNormal).ToLocalChecked(),
         Ouroborus);
 
-        // vi skapar ett context som håller det globala objektet
         Local<Context> context = Context::New(isolate, nullptr, global);
         Context::Scope context_scope(context);
 
         // register Ouroborus features under Ouroborus namespace
         Main(Local<Object>::Cast(context->Global()->Get(String::NewFromUtf8(isolate, "Ouroborus", NewStringType::kNormal).ToLocalChecked())));
 
-        // ladda in scriptet (preprocessa include)
         Local<String> source = String::NewFromUtf8(isolate, code.data(), NewStringType::kNormal, (int) code.length()).ToLocalChecked();
 
-        // kompilera hela skiten, med allt inläst
         Local<Script> script = Script::Compile(context, source).ToLocalChecked();
 
-        // kör första "tick" där vi sätter upp saker
         Local<Value> result = script->Run(context).ToLocalChecked();
 
-        // kör servern nu
         Ouroborus::Loop::defaultLoop()->run();
     }
 

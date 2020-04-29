@@ -1,5 +1,6 @@
 #include "App.h"
 #include "Utilities.h"
+#include "HttpParser.h"
 
 #include <v8.h>
 using namespace v8;
@@ -46,12 +47,45 @@ struct HttpRequestWrapper {
         }
     }
 
+    static void req_getParameters(const FunctionCallbackInfo<Value> &args) {
+        Isolate *isolate = args.GetIsolate();
+        auto *req = getHttpRequest(args);
+        if (req) {
+          Local<Context> context = isolate->GetCurrentContext();
+            int index = args[0]->Uint32Value(context).ToChecked();
+
+            auto params = req->getParameters();
+            Local<Object> result = Object::New(isolate);
+
+            for ( unsigned int i = 0; i < params.first+1; i++ ) {
+
+               result->Set(
+                 context,
+                 String::NewFromUtf8(isolate,params.second[i].first.data(), NewStringType::kNormal,params.second[i].first.length()).ToLocalChecked(),
+                 String::NewFromUtf8(isolate,params.second[i].second.data(), NewStringType::kNormal,params.second[i].second.length()).ToLocalChecked()
+               );
+             }
+            args.GetReturnValue().Set(result);
+        }
+    }
+
     /* Takes nothing, returns string */
     static void req_getUrl(const FunctionCallbackInfo<Value> &args) {
         Isolate *isolate = args.GetIsolate();
         auto *req = getHttpRequest(args);
         if (req) {
             std::string_view url = req->getUrl();
+
+            args.GetReturnValue().Set(String::NewFromUtf8(isolate, url.data(), NewStringType::kNormal, url.length()).ToLocalChecked());
+        }
+    }
+
+    /* Takes nothing, returns string */
+    static void req_getFullUrl(const FunctionCallbackInfo<Value> &args) {
+        Isolate *isolate = args.GetIsolate();
+        auto *req = getHttpRequest(args);
+        if (req) {
+            std::string_view url = req->getFullUrl();
 
             args.GetReturnValue().Set(String::NewFromUtf8(isolate, url.data(), NewStringType::kNormal, url.length()).ToLocalChecked());
         }
@@ -72,7 +106,28 @@ struct HttpRequestWrapper {
             args.GetReturnValue().Set(String::NewFromUtf8(isolate, header.data(), NewStringType::kNormal, header.length()).ToLocalChecked());
         }
     }
+    static void req_getHeaders(const FunctionCallbackInfo<Value> &args) {
+        Isolate *isolate = args.GetIsolate();
+        auto *req = getHttpRequest(args);
+        if (req) {
+          Local<Context> context = isolate->GetCurrentContext();
+            int index = args[0]->Uint32Value(context).ToChecked();
 
+            auto headers = req->getHeaders();
+            Local<Object> result = Object::New(isolate);
+            for ( unsigned int i = 1; i < headers.first; i++ ) {
+
+              if(headers.second[i].key.length() > 0) {
+                result->Set(
+                  context,
+                  String::NewFromUtf8(isolate,headers.second[i].key.data(), NewStringType::kNormal,headers.second[i].key.length()).ToLocalChecked(),
+                  String::NewFromUtf8(isolate,headers.second[i].value.data(), NewStringType::kNormal,headers.second[i].value.length()).ToLocalChecked()
+                );
+              }
+             }
+            args.GetReturnValue().Set(result);
+        }
+    }
     /* Takes boolean, returns this */
     static void req_setYield(const FunctionCallbackInfo<Value> &args) {
         Isolate *isolate = args.GetIsolate();
@@ -115,8 +170,11 @@ struct HttpRequestWrapper {
 
         /* Register our functions */
         reqTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getHeader", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, req_getHeader));
+        reqTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getHeaders", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, req_getHeaders));
         reqTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getParameter", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, req_getParameter));
+        reqTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getParameters", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, req_getParameters));
         reqTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getUrl", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, req_getUrl));
+        reqTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getFullUrl", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, req_getFullUrl));
         reqTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getMethod", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, req_getMethod));
         reqTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getQuery", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, req_getQuery));
         reqTemplateLocal->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "forEach", NewStringType::kNormal).ToLocalChecked(), FunctionTemplate::New(isolate, req_forEach));

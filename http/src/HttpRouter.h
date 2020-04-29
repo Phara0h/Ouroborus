@@ -25,6 +25,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <iostream>
 #include <utility>
 
 #include "f2/function2.hpp"
@@ -34,7 +35,7 @@ namespace Ouroborus {
 template <class USERDATA>
 struct HttpRouter {
     /* These are public for now */
-    std::vector<std::string> methods = {"get", "post", "head", "put", "delete", "connect", "options", "trace", "patch"};
+    std::vector<std::string> methods = {"GET", "POST", "HEAD", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"};
     static const uint32_t HIGH_PRIORITY = 0xd0000000, MEDIUM_PRIORITY = 0xe0000000, LOW_PRIORITY = 0xf0000000;
 
 private:
@@ -89,15 +90,17 @@ private:
         friend struct HttpRouter;
     private:
         std::string_view params[MAX_URL_SEGMENTS];
+        std::pair<std::string_view, std::string_view> paramsObject[MAX_URL_SEGMENTS];
         int paramsTop;
 
         void reset() {
             paramsTop = -1;
         }
 
-        void push(std::string_view param) {
+        void push(std::string_view param, std::string_view name) {
             /* We check these bounds indirectly via the urlSegments limit */
             params[++paramsTop] = param;
+            paramsObject[paramsTop] = std::make_pair(name,param);
         }
 
         void pop() {
@@ -152,7 +155,7 @@ private:
 
     /* Executes as many handlers it can */
     bool executeHandlers(Node *parent, int urlSegment, USERDATA &userData) {
-
+//std::cout<<routeParameters.params[0] << routeParameters.params[1] << std::endl;
         auto [segment, isStop] = getUrlSegment(urlSegment);
 
         /* If we are on STOP, return where we may stand */
@@ -177,11 +180,14 @@ private:
                 }
             } else if (p->name.length() && p->name[0] == ':' && segment.length()) {
                 /* Parameter match */
-                routeParameters.push(segment);
+                //std::cout<< p->name.c_str() << segment << std::endl;
+                routeParameters.push(segment, p->name.substr(1));
+
                 if (executeHandlers(p.get(), urlSegment + 1, userData)) {
                     return true;
                 }
                 routeParameters.pop();
+
             } else if (p->name == segment) {
                 /* Static match */
                 if (executeHandlers(p.get(), urlSegment + 1, userData)) {
@@ -200,8 +206,8 @@ public:
         }
     }
 
-    std::pair<int, std::string_view *> getParameters() {
-        return {routeParameters.paramsTop, routeParameters.params};
+    std::pair<int, std::pair<std::string_view,std::string_view> *> getParameters() {
+        return {routeParameters.paramsTop, routeParameters.paramsObject};
     }
 
     USERDATA &getUserData() {
@@ -228,6 +234,7 @@ public:
 
     /* Adds the corresponding entires in matching tree and handler list */
     void add(std::vector<std::string> methods, std::string pattern, fu2::unique_function<bool(HttpRouter *)> &&handler, uint32_t priority = MEDIUM_PRIORITY) {
+
         for (std::string method : methods) {
             /* Lookup method */
             Node *node = getNode(&root, method, false);
