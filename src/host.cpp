@@ -1,6 +1,6 @@
 /*
  * Authored by Phara0h, 2020.
- * Intellectual property of third-party.
+ * Authored by Alex Hultman, 2018-2019.
 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
