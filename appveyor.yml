@@ -17,11 +17,6 @@ for:
         - image: Visual Studio 2017
     build_script:
     - cmd: >-
-        cd http
-
-        git clone "https://github.com/uNetworking/uSockets"
-
-        cd ..
 
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
 

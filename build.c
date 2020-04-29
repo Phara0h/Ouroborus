@@ -86,7 +86,7 @@ void build_windows(char *arch) {
     for (unsigned int i = 0; i < sizeof(versions) / sizeof(struct node_version); i++) {
         run("cl /W3 /D \"LIBUS_USE_LIBUV\" /D \"LIBUS_USE_OPENSSL\" /std:c++17 /I http/uSockets/src http/uSockets/src/*.c "
             "http/uSockets/src/eventing/*.c http/uSockets/src/crypto/*.c /I targets/node-%s/include/node /I http/src /EHsc "
-            "/Ox /LD /Fedist/Ouroborus_win32_%s_%s.node src/addon.cpp targets/node-%s/node.lib",
+            "/Ox /LD /Fe dist/Ouroborus_win32_%s_%s.node src/addon.cpp targets/node-%s/node.lib",
             versions[i].name, arch, versions[i].abi, versions[i].name);
     }
 }
@@ -101,8 +101,8 @@ int main() {
 #else
 #ifdef IS_MACOS
     /* Apple special case */
-    build("clang -mmacosx-version-min=10.7",
-          "clang++ -stdlib=libc++ -mmacosx-version-min=10.7",
+    build("clang -mmacosx-version-min=10.7 -L/usr/local/opt/openssl/lib -I/usr/local/opt/openssl/include",
+          "clang++ -stdlib=libc++ -mmacosx-version-min=10.7  -L/usr/local/opt/v8/libexec -I/usr/local/opt/v8/libexec/include -I/usr/local/include/node/",
           "-undefined dynamic_lookup",
           OS,
           "x64");
