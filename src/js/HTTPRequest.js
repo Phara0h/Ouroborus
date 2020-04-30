@@ -1,5 +1,7 @@
 /*
- * Authored by Phara0h, 2020.
+ * Copyright 2020 Phara0h
+ * Changes are the diff from uWebSockets.js v17.4.0 (commit 116a85f9668dcb03e7799db06dc8275bc43c0963)
+ * to this file.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
