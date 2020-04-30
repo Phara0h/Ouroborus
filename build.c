@@ -92,6 +92,7 @@ void build_windows(char *arch) {
 }
 
 int main() {
+    run("git clone -b v0.3.5 \"https://github.com/uNetworking/uSockets.git\" http/uSockets");
     printf("[Preparing]\n");
     prepare();
     printf("\n[Building]\n");
